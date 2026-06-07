@@ -8,6 +8,11 @@ A desktop monitor firmware for the [M5Stack AtomS3](https://docs.m5stack.com/en/
 
 Displays a clock and Bitcoin price, switchable via tap on the built-in IMU.
 
+<p align="center">
+  <img src="clock.jpeg" width="45%"/>
+  <img src="btc.jpeg" width="45%"/>
+</p>
+
 ## Views
 
 - **Clock** — local time (Argentina / GMT-3) with date
