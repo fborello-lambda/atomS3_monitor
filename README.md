@@ -1,4 +1,8 @@
-# ATOMS3 Monitor
+<h1 align=center>
+
+AtomS3 Monitor
+
+</h1>
 
 A desktop monitor firmware for the [M5Stack AtomS3](https://docs.m5stack.com/en/core/AtomS3) — a tiny ESP32-S3 device with a 128×128 IPS display.
 
