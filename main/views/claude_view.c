@@ -6,6 +6,7 @@
 #define CLAUDE_ORANGE 0xC15F3C
 
 static lv_obj_t *lbl_clock;
+static lv_obj_t *lbl_fetch;
 static lv_obj_t *lbl_5h_pct;
 static lv_obj_t *bar_5h;
 static lv_obj_t *lbl_7d_pct;
@@ -49,12 +50,18 @@ lv_obj_t *claude_view_create(void)
     lv_obj_set_style_text_color(lbl_wifi, lv_palette_main(LV_PALETTE_RED), 0);
     lv_obj_align(lbl_wifi, LV_ALIGN_RIGHT_MID, -2, 0);
 
-    // ── Clock HH:MM ──────────────────────────────────────────────────────────
+    // ── Clock HH:MM + last fetch time ─────────────────────────────────────────
     lbl_clock = lv_label_create(scr);
     lv_label_set_text(lbl_clock, "--:--");
     lv_obj_set_style_text_font(lbl_clock, &lv_font_montserrat_16, 0);
     lv_obj_set_style_text_color(lbl_clock, lv_color_hex(0xaaaaaa), 0);
-    lv_obj_align(lbl_clock, LV_ALIGN_TOP_MID, 0, 22);
+    lv_obj_align(lbl_clock, LV_ALIGN_TOP_MID, -16, 22);
+
+    lbl_fetch = lv_label_create(scr);
+    lv_label_set_text(lbl_fetch, "");
+    lv_obj_set_style_text_font(lbl_fetch, &lv_font_montserrat_14, 0);
+    lv_obj_set_style_text_color(lbl_fetch, lv_color_hex(0x555555), 0);
+    lv_obj_align_to(lbl_fetch, lbl_clock, LV_ALIGN_OUT_RIGHT_MID, 6, 1);
 
     // ── 5h row ───────────────────────────────────────────────────────────────
     lv_obj_t *tag5 = lv_label_create(scr);
@@ -155,6 +162,12 @@ void claude_view_update(void)
         lv_label_set_text(lbl_rst_5h, s.fetching ? "fetching..." : "no data");
         return;
     }
+
+    // Last fetch time next to the clock
+    struct tm tf;
+    localtime_r(&s.last_ok_epoch, &tf);
+    snprintf(buf, sizeof(buf), "/ %02d:%02d", tf.tm_hour % 24, tf.tm_min % 60);
+    lv_label_set_text(lbl_fetch, buf);
 
     snprintf(buf, sizeof(buf), "%.0f%%", s.five_hour);
     lv_label_set_text(lbl_5h_pct, buf);
