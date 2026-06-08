@@ -4,8 +4,10 @@ idf_component_register(
         "imu.c"
         "apps/clock_app.c"
         "apps/bitcoin_app.c"
+        "apps/claude_app.c"
         "views/clock_view.c"
         "views/bitcoin_view.c"
+        "views/claude_view.c"
     INCLUDE_DIRS "."
     REQUIRES
         nvs_flash

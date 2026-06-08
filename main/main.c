@@ -19,6 +19,7 @@
 #include "imu.h"
 #include "apps/clock_app.h"
 #include "apps/bitcoin_app.h"
+#include "apps/claude_app.h"
 #include "views/views.h"
 
 static const char *TAG = "main";
@@ -106,7 +107,7 @@ static void display_init(void)
 
     esp_lcd_panel_dev_config_t panel_cfg = {
         .reset_gpio_num = LCD_PIN_RST,
-        .rgb_ele_order  = LCD_RGB_ELEMENT_ORDER_RGB,
+        .rgb_ele_order  = LCD_RGB_ELEMENT_ORDER_BGR,
         .bits_per_pixel = 16,
     };
     ESP_ERROR_CHECK(esp_lcd_new_panel_gc9107(io_handle, &panel_cfg, &panel_handle));
@@ -150,7 +151,7 @@ static void lvgl_init(void)
 }
 
 // ── View manager ──────────────────────────────────────────────────────────────
-#define NUM_VIEWS 2
+#define NUM_VIEWS 3
 static lv_obj_t *views[NUM_VIEWS];
 static int current_view = 0;
 
@@ -165,8 +166,9 @@ static void view_next(void)
 static void on_tap(void) { view_next(); }
 
 // ── Timers ────────────────────────────────────────────────────────────────────
-static void clock_timer_cb(lv_timer_t *t) { (void)t; clock_view_tick(); }
-static void btc_timer_cb(lv_timer_t *t)   { (void)t; bitcoin_view_update(); }
+static void clock_timer_cb(lv_timer_t *t)   { (void)t; clock_view_tick(); }
+static void btc_timer_cb(lv_timer_t *t)     { (void)t; bitcoin_view_update(); }
+static void claude_timer_cb(lv_timer_t *t)  { (void)t; claude_view_update(); }
 
 // ── Entry point ───────────────────────────────────────────────────────────────
 void app_main(void)
@@ -182,13 +184,16 @@ void app_main(void)
     lvgl_port_lock(0);
     views[0] = clock_view_create();
     views[1] = bitcoin_view_create();
+    views[2] = claude_view_create();
     lv_scr_load(views[0]);
-    lv_timer_create(clock_timer_cb, 1000, NULL);
-    lv_timer_create(btc_timer_cb,    500, NULL);
+    lv_timer_create(clock_timer_cb,  1000, NULL);
+    lv_timer_create(btc_timer_cb,     500, NULL);
+    lv_timer_create(claude_timer_cb,  500, NULL);
     lvgl_port_unlock();
 
     clock_app_start(wifi_events);
     bitcoin_app_start(wifi_events);
+    claude_app_start(wifi_events);
 
     if (imu_init())
         imu_start_tap_task(on_tap);
